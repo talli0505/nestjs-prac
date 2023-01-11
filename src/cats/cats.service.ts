@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cat } from './entity/cats.entitiy';
-import { Repository } from 'typeorm';
+import { Repository, getConnection } from 'typeorm';
 
 @Injectable()
 export class CatsService {
@@ -25,5 +25,30 @@ export class CatsService {
 
   async remove(id: number) : Promise<void> {
     await this.catsRepository.delete(id);
+  }
+
+  async update(id:number, cat: Cat) : Promise<void> {
+    const existedCat = await this.findOne(id);
+
+    if(existedCat) {
+      // await this.catsRepository
+      // .createQueryBuilder('cat')
+      // // 앞에 id는 접근한 id를 따라 써야함..
+      // .where("cat.id = :id", {id})
+      // .update({
+      //   name : cat.name,
+      //   age : cat.age,
+      //   breed : cat.breed
+      // })
+      // .execute();
+
+      // 간단한 문법 
+      await this.catsRepository.update(id, 
+        {
+        name : cat.name,
+        age : cat.age,
+        breed : cat.breed}
+      );
+    }
   }
 }

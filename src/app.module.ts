@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cat } from './cats/entity/cats.entitiy';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { Cat } from './cats/entity/cats.entitiy';
       // 엔터티 만들고나면 테이블을 자동으로 생성해주는 옵션이므로 개발에서만 사용
       synchronize: true,
     }),
-    CatsModule],
+    CatsModule,
+    AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
