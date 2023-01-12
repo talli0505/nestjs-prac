@@ -1,20 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserRepository } from "./user.repository";
 import { FindOneOptions } from "typeorm";
 import { UserDTO } from "./dto/user.dto";
+import { UserRepository } from "./repository/user.repository";
+import * as bcrypt from 'bcrypt';
+import { User } from "../domain/user.entity";
 
 @Injectable()
-export class UserSerivce {
-  constructor(@InjectRepository(UserRepository)
-  private userRepository: UserRepository
-  ) {}
+export class UserService {
+    constructor(
+        @InjectRepository(UserRepository)
+        private userRepository: UserRepository
+    ){}
 
-  async findByFields(option: FindOneOptions<UserDTO>): Promise<UserDTO | undefined> {
-    return await this.userRepository.findOne(option);
-  }
+    async findByFields(options: FindOneOptions<UserDTO>): Promise<User | undefined> {
+        return await this.userRepository.findOne(options);
+    }
 
-  async save(userDTO: UserDTO): Promise<UserDTO | undefined> {
-    return await this.userRepository.save(userDTO);
-  }
+    async save(userDTO: UserDTO): Promise<UserDTO | undefined> {
+        await this.transformPassword(userDTO);
+        console.log(userDTO);
+        return await this.userRepository.save(userDTO);
+    }
+
+    async transformPassword(user: UserDTO): Promise<void> {
+        user.password = await bcrypt.hash(
+            user.password, 10,
+        );
+        return Promise.resolve();
+    }
 }
